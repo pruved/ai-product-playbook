@@ -10,7 +10,7 @@ MDFORMAT ?= mdformat
 MARKDOWN_PATHS_CMD = git -c core.quotePath=false ls-files -z --cached --others --exclude-standard '*.md' \
 	| while IFS= read -r -d '' path; do test ! -f "$$path" || printf '%s\0' "$$path"; done
 
-.PHONY: check help markdown-fmt markdown-fmt-check
+.PHONY: check help markdown-fmt markdown-fmt-check precommit-install precommit-run
 
 check: markdown-fmt-check ## Run every repository check
 
@@ -24,3 +24,9 @@ markdown-fmt: ## Format tracked and untracked non-ignored Markdown files
 
 markdown-fmt-check: ## Check tracked and untracked non-ignored Markdown formatting
 	@set -o pipefail; $(MARKDOWN_PATHS_CMD) | xargs -0 --no-run-if-empty $(MDFORMAT) --check
+
+precommit-install: ## Install pre-commit hooks
+	pre-commit install
+
+precommit-run: ## Run pre-commit on all files
+	pre-commit run --all-files
